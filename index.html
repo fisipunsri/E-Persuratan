@@ -101,16 +101,12 @@
             <div class="spinner"></div>
         </div>
     </div>
-    
-    <iframe 
-        src="https://script.google.com/macros/s/AKfycbwrtXdpNuvPRwwVEpRC_Jl7KuAoldXP1mSWGrm16J-oYFh6CrptmgEdzyLcXa_M4s-FAQ/exec" 
-        onload="
-            var loader = document.getElementById('loader-container');
-            loader.style.opacity = '0';
-            setTimeout(function(){ loader.style.visibility = 'hidden'; loader.style.display = 'none'; }, 500);
-        " 
-        allowfullscreen>
-    </iframe>
+
+    <script>
+        setTimeout(function() {
+            window.location.href = "https://script.google.com/macros/s/AKfycbwrtXdpNuvPRwwVEpRC_Jl7KuAoldXP1mSWGrm16J-oYFh6CrptmgEdzyLcXa_M4s-FAQ/exec";
+        }, 800);
+    </script>
 
 </body>
 </html>
