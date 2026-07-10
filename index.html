@@ -1,1033 +1,116 @@
-<!DOCTYPE html><html><head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="https://lh3.googleusercontent.com/d/1y7uSeQTv9gfPLRiTM7yYbW74Cpv6DXJp" type="image/png">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <style>
-    .loading-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.8);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-    }
-    @media print {
-      nav, .no-print, .btn-aksi { display: none !important; }
-      body { background: white; }
-    }
-    .card-stat { transition: transform 0.3s ease; }
-    .card-stat:hover { transform: translateY(-5px); }
-    .logo-unsri {
-      object-fit: contain;
-      filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.1));
-    }
-    .custom-scroll::-webkit-scrollbar { width: 4px; }
-    .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-  </style></head><body class="bg-gray-50 min-h-screen font-sans text-sm md:text-base overflow-y-scroll">
-
-  <div id="loading" class="loading-overlay flex flex-col">
-    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-    <p class="text-blue-600 font-bold uppercase tracking-widest text-xs">Memproses Data...</p>
-  </div>
-
-  <div id="customDialog" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 transition-opacity no-print" style="z-index: 99999;">
-      <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 text-center transform scale-100">
-          <h3 id="dialogTitle" class="text-lg font-black text-gray-800 uppercase mb-2 tracking-tight">Informasi</h3>
-          <p id="dialogMessage" class="text-sm text-gray-600 mb-6"></p>
-          <div class="flex justify-center gap-3">
-              <button id="btnDialogOk" class="flex-grow px-6 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs uppercase hover:bg-blue-700 transition shadow-lg">OK</button>
-              <button id="btnDialogCancel" class="hidden flex-grow px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl text-xs uppercase hover:bg-gray-200 transition shadow-lg">Batal</button>
-          </div>
-      </div>
-  </div>
-
-  <div id="loginPage" class="flex flex-col items-center justify-center min-h-screen px-4 no-print relative" style="background-image: url('https://lh3.googleusercontent.com/d/1CGzsZV7mebKoTC7T2gH1tov0mNRx4a-V'); background-size: cover; background-position: center; background-attachment: fixed;">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-PERSURATAN</title>
+    <link rel="icon" href="https://lh3.googleusercontent.com/d/1y7uSeQTv9gfPLRiTM7yYbW74Cpv6DXJp" type="image/png">
     
-    <div class="absolute inset-0 bg-white/50 backdrop-blur-lg z-0"></div>
-    
-    <div class="bg-white p-6 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100 z-10 relative">
-      <div class="flex flex-col items-center mb-8">
-        <img src="https://lh3.googleusercontent.com/d/1y7uSeQTv9gfPLRiTM7yYbW74Cpv6DXJp" alt="Logo" class="w-20 md:w-24 h-auto mb-6 logo-unsri">
-        <h1 class="text-lg md:text-xl font-black text-center text-blue-800 uppercase tracking-tight leading-tight">
-          E-PERSURATAN<br>
-          <span class="text-blue-600 text-[11px] md:text-sm mt-1 block leading-snug">FAKULTAS ILMU SOSIAL DAN ILMU POLITIK<br>UNIVERSITAS SRIWIJAYA</span>
-        </h1>
-      </div>
-      
-      <div class="space-y-5">
-        <div>
-          <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Username</label>
-          <input type="text" id="username" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-400 transition" placeholder="Username">
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Password</label>
-          <input type="password" id="password" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-400 transition" placeholder="••••••••">
-        </div>
-        <button onclick="doLogin()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg transform active:scale-95 uppercase tracking-wider text-xs md:text-sm">Masuk Ke Sistem</button>
-      </div>
-      
-      <p id="loginError" class="text-red-500 text-xs mt-4 hidden text-center font-bold bg-red-50 p-3 rounded-lg border border-red-100 uppercase">Akses Ditolak!</p>
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        /* Iframe berada di bawah loader */
+        iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1;
+        }
+        
+        /* Kontainer untuk layar loading */
+        #loader-container { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: #ffffff; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            z-index: 10; 
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
 
-      <div class="mt-8 text-center text-[10px] md:text-[11px] font-medium pt-5 border-t border-gray-100 leading-relaxed">
-          <span class="text-slate-500">E-Persuratan FISIP Universitas Sriwijaya © 2026.<br>Dikembangkan oleh </span><span class="text-yellow-600 font-bold">Purwo Julianto</span><span class="text-slate-500">.<br>All Rights Reserved.</span>
-      </div>
+        /* Konten di dalam loader */
+        .loader-content {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+        }
+
+        /* Styling Logo (Animasi denyut/pulse) */
+        .loader-content img {
+            width: 110px; /* Ukuran logo */
+            margin-bottom: 24px;
+            animation: pulse 2s infinite ease-in-out;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        /* Styling Teks */
+        .loader-text {
+            color: #1e3a8a; /* Warna Navy UNSRI */
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Styling Lingkaran Animasi (Spinner) */
+        .spinner {
+            border: 4px solid #f1f5f9;
+            border-top: 4px solid #fbbf24; /* Warna Gold UNSRI */
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Animasi */
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader-container">
+        <div class="loader-content">
+            <img src="https://lh3.googleusercontent.com/d/1y7uSeQTv9gfPLRiTM7yYbW74Cpv6DXJp" alt="Logo">
+            <div class="loader-text">Memuat Aplikasi E-Persuratan...</div>
+            <div class="spinner"></div>
+        </div>
     </div>
-
-  </div>
-
-  <div id="mainApp" class="hidden">
-    <nav class="bg-blue-800 text-white p-3 md:p-4 shadow-xl no-print sticky top-0 z-50">
-      <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
-        <div class="flex items-center space-x-3">
-          <img src="https://lh3.googleusercontent.com/d/1y7uSeQTv9gfPLRiTM7yYbW74Cpv6DXJp" alt="Logo" class="h-8 md:h-10 w-auto brightness-0 invert logo-unsri">
-          <span class="font-black text-sm md:text-lg tracking-tighter uppercase">E-Persuratan</span>
-        </div>
-        <div class="flex items-center bg-blue-900/50 rounded-full p-1 w-full md:w-auto justify-between md:justify-start">
-          <div class="flex">
-            <button onclick="showMenu('input')" class="px-3 md:px-4 py-2 hover:bg-blue-600 rounded-full text-[10px] font-bold uppercase transition">Input</button>
-            <button onclick="showMenu('list')" class="px-3 md:px-4 py-2 hover:bg-blue-600 rounded-full text-[10px] font-bold uppercase transition">Daftar</button>
-            <button onclick="showMenu('stats')" class="px-3 md:px-4 py-2 hover:bg-blue-600 rounded-full text-[10px] font-bold uppercase transition">Statistik</button>
-          </div>
-          <button onclick="logout()" class="ml-2 px-3 md:px-4 py-2 bg-red-500 hover:bg-red-600 rounded-full text-[10px] font-bold uppercase transition shadow-lg">Keluar</button>
-        </div>
-      </div>
-    </nav>
-
-    <div class="container mx-auto mt-6 md:mt-8 px-4 pb-4">
-      
-      <div id="sectionInput" class="bg-white p-6 md:p-8 rounded-2xl shadow-xl max-w-6xl mx-auto no-print border border-gray-100 hidden">
-        <div class="flex items-center mb-8 space-x-3 border-b pb-4">
-            <div class="bg-blue-600 p-2 rounded-lg">
-                <svg id="formIcon" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </div>
-            <div>
-              <h2 id="formTitle" class="text-xl md:text-2xl font-black text-gray-800 uppercase tracking-tight">Input Persuratan Baru</h2>
-              <p id="editNotice" class="text-[10px] text-yellow-600 font-bold uppercase hidden">Sedang dalam mode edit data</p>
-            </div>
-        </div>
-
-        <input type="hidden" id="editRowIndex" value="">
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div class="space-y-4">
-              <h3 class="font-bold text-blue-700 uppercase text-xs tracking-widest bg-blue-50 p-2 rounded border-l-4 border-blue-600">Informasi Utama</h3>
-              
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Kategori</label>
-                  <select id="kategori" class="w-full border-gray-200 border p-3 rounded-xl bg-gray-100 text-gray-500 font-bold text-sm cursor-not-allowed outline-none" disabled>
-                    <option value="Surat Masuk" selected>Surat Masuk</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Kode Klasifikasi</label>
-                  <select id="kodeKlasifikasi" class="w-full border-gray-200 border p-3 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none bg-white text-sm">
-                    <option value="AK">AK - Akademik</option>
-                    <option value="KM">KM - Kemahasiswaan</option>
-                    <option value="PM">PM - Penjaminan Mutu</option>
-                    <option value="PK">PK - Perencanaan dan Keuangan</option>
-                    <option value="KP">KP - Kepegawaian</option>
-                    <option value="LG">LG - Logistik</option>
-                    <option value="PI_7">PI - Penelitian, Pengabdian & Inovasi</option>
-                    <option value="KS">KS - Kerjasama</option>
-                    <option value="MI">MI - Mobilitas Internasional Dosen & Mhs</option>
-                    <option value="AL">AL - Alumni</option>
-                    <option value="PI_11">PI - Publikasi Ilmiah</option>
-                    <option value="UL">UL - Unit Layanan Terpadu</option>
-                    <option value="RB">RB - Ruang Baca</option>
-                    <option value="SA">SA - Persuratan dan Kearsipan</option>
-                    <option value="IT">IT - ICT</option>
-                    <option value="HM">HM - Humas</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Nomor Agenda</label>
-                  <input type="text" id="noAgenda" class="w-full border-gray-200 border p-3 rounded-xl outline-none text-sm bg-gray-100 cursor-not-allowed font-bold text-gray-600" placeholder="Otomatis..." readonly>
-                </div>
-              </div>
-              
-              <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Alamat Pengirim / Tujuan</label>
-                <input type="text" id="alamatPengirim" class="w-full border-gray-200 border p-3 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-sm" placeholder="Contoh: Dekanat FT / Rektorat">
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Tanggal Surat</label>
-                  <input type="date" id="tglSurat" class="w-full border-gray-200 border p-3 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-sm">
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Nomor Surat</label>
-                  <input type="text" id="noSurat" class="w-full border-gray-200 border p-3 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-sm">
-                </div>
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Perihal</label>
-                <input type="text" id="perihal" class="w-full border-gray-200 border p-3 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-sm font-bold">
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Lampiran File Utama (PDF/Gambar)</label>
-                <div class="flex items-center gap-2">
-                   <input type="file" id="fileInput" class="w-full border-gray-200 border p-2 rounded-xl bg-gray-50 text-[10px] cursor-pointer">
-                   <div id="existingFile" class="hidden"><span class="text-blue-600 text-[10px] font-bold italic">File Tersimpan</span></div>
-                </div>
-              </div>
-          </div>
-
-          <div class="space-y-4">
-              <h3 class="font-bold text-green-700 uppercase text-xs tracking-widest bg-green-50 p-2 rounded border-l-4 border-green-600">Alur Disposisi & Keterangan</h3>
-              
-              <div id="disposisiContainer" class="grid grid-cols-1 gap-3 max-h-72 overflow-y-auto pr-2 custom-scroll">
-              </div>
-              
-              <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Catatan Tambahan (Status Akhir)</label>
-                <textarea id="keterangan" class="w-full border-gray-200 border p-3 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-sm" rows="2" placeholder="Keterangan lainnya..."></textarea>
-              </div>
-
-              <div id="containerLampiran2" class="hidden pt-2">
-                <label class="block text-[10px] font-bold text-green-600 uppercase mb-1 ml-1">Lampiran File 2 (Khusus PDF)</label>
-                <div class="flex items-center gap-2">
-                   <input type="file" id="fileInput2" accept=".pdf" class="w-full border-green-200 border p-2 rounded-xl bg-green-50 text-[10px] cursor-pointer focus:ring-2 focus:ring-green-400 outline-none">
-                   <div id="existingFile2" class="hidden"><span class="text-green-600 text-[10px] font-bold italic">File 2 Tersimpan</span></div>
-                </div>
-                <p class="text-[9px] text-gray-400 ml-1 mt-1 italic">*Tersimpan otomatis sesuai kode klasifikasi awal</p>
-              </div>
-
-          </div>
-        </div>
-        
-        <div class="flex flex-col md:flex-row gap-3 mt-8">
-          <button onclick="submitArsip()" id="btnSubmit" class="flex-grow bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-700 transition uppercase shadow-xl transform active:scale-[0.98] text-xs">Simpan & Perbarui Database</button>
-          <button onclick="showMenu('list')" id="btnReset" class="md:w-1/4 bg-gray-100 text-gray-500 py-4 rounded-2xl font-black hover:bg-gray-200 transition uppercase text-xs">Batal</button>
-        </div>
-      </div>
-
-      <div id="sectionList" class="hidden">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 no-print">
-          <div class="w-full md:w-auto">
-            <h2 class="text-2xl md:text-3xl font-black text-gray-800 uppercase tracking-tighter">Database Persuratan</h2>
-            <div class="mt-4 flex flex-wrap gap-2 items-center">
-              <button onclick="printData()" class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-gray-50 transition shadow-sm">Print</button>
-              <button onclick="exportToPDF()" class="bg-red-50 text-red-600 border border-red-100 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-red-100 transition shadow-sm">PDF</button>
-              <button onclick="loadArsipList()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-blue-700 transition shadow-lg">Refresh</button>
-              
-              <div class="h-6 border-l border-gray-300 mx-1"></div>
-              <select id="triwulanSelect" class="bg-white border border-gray-200 text-gray-700 px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm outline-none cursor-pointer">
-                  <option value="all">Semua Triwulan</option>
-                  <option value="1">Triwulan 1 (Jan-Mar)</option>
-                  <option value="2">Triwulan 2 (Apr-Jun)</option>
-                  <option value="3">Triwulan 3 (Jul-Sep)</option>
-                  <option value="4">Triwulan 4 (Okt-Des)</option>
-              </select>
-              <button onclick="exportToExcel()" class="bg-green-50 text-green-600 border border-green-100 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-green-100 transition shadow-sm flex gap-1 items-center">
-                  EXCEL
-              </button>
-            </div>
-          </div>
-          <div class="w-full md:w-1/3">
-            <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </span>
-                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari perihal, no surat, kode..." class="w-full bg-white border border-gray-200 pl-10 p-3 rounded-2xl shadow-sm outline-none focus:ring-2 focus:ring-blue-400 transition text-sm">
-            </div>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
-          <div class="overflow-x-auto">
-            <table id="arsipTable" class="w-full text-left border-collapse text-[10px] md:text-xs">
-              <thead class="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r w-24">Waktu Input</th>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r w-16">Agenda</th>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r w-24">Kategori</th>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r w-16">Kode</th>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r w-24">Tgl Surat</th>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r">No Surat</th>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r">Dari/Ke</th>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r">Perihal</th>
-                  <th class="p-4 font-black text-gray-400 uppercase border-r">Disposisi Terbaru</th>
-                  <th class="p-4 font-black text-gray-400 uppercase text-center no-print w-48">Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="arsipTableBody" class="divide-y divide-gray-50"></tbody>
-            </table>
-          </div>
-          
-          <div class="flex flex-col md:flex-row justify-between items-center mt-4 p-4 border-t border-gray-100 bg-gray-50 no-print">
-            <button id="btnPrev" onclick="changePage(-1)" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-blue-700 transition shadow-lg w-full md:w-auto mb-2 md:mb-0">Sebelumnya</button>
-            <span id="pageNumber" class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest text-center">Halaman 1</span>
-            <button id="btnNext" onclick="changePage(1)" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-blue-700 transition shadow-lg w-full md:w-auto mt-2 md:mt-0">Selanjutnya</button>
-          </div>
-          
-        </div>
-      </div>
-
-      <div id="sectionStats" class="hidden">
-        <h2 class="text-2xl font-black text-gray-800 uppercase tracking-tighter mb-8">Dashboard Analitik</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-blue-600 text-white p-6 rounded-3xl shadow-xl card-stat">
-                <p class="text-[10px] font-bold uppercase opacity-80">Surat Masuk</p>
-                <h3 id="statMasuk" class="text-5xl font-black mt-1">0</h3>
-            </div>
-            <div class="bg-green-600 text-white p-6 rounded-3xl shadow-xl card-stat">
-                <p class="text-[10px] font-bold uppercase opacity-80">Surat Keluar</p>
-                <h3 id="statKeluar" class="text-5xl font-black mt-1">0</h3>
-            </div>
-            <div class="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 card-stat flex flex-col">
-                <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Volume Persentase</p>
-                <div class="flex-grow flex items-center justify-center">
-                    <canvas id="miniChart" height="80"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-gray-100">
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-10">
-                <div class="w-full lg:w-1/2">
-                    <h4 class="text-xl font-black text-gray-800 uppercase mb-4 tracking-tight">Grafik Aktivitas Tahunan</h4>
-                    <p class="text-gray-500 text-sm leading-relaxed">Statistik ini dihitung otomatis berdasarkan data yang tersinkronisasi dengan Database Unit Kerja.</p>
-                </div>
-                <div class="w-full lg:w-1/2 flex justify-center">
-                    <div style="max-width: 320px; width: 100%;">
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-gray-100 mt-8">
-            <div class="flex flex-col mb-6">
-                <h4 class="text-xl font-black text-gray-800 uppercase tracking-tight">Grafik Surat Per Bulan</h4>
-                <p class="text-gray-500 text-sm leading-relaxed">Statistik surat masuk dan keluar (Januari - Desember) pada tahun berjalan.</p>
-            </div>
-            <div class="w-full flex justify-center" style="height: 300px;">
-                <canvas id="monthlyChart"></canvas>
-            </div>
-        </div>
-
-        <!-- REVISI: Grafik jumlah dokumen per Kode Klasifikasi -->
-        <div class="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-gray-100 mt-8">
-            <div class="flex flex-col mb-6">
-                <h4 class="text-xl font-black text-gray-800 uppercase tracking-tight">Grafik Jumlah Dokumen per Kode Klasifikasi</h4>
-                <p class="text-gray-500 text-sm leading-relaxed">Jumlah dokumen berdasarkan Kode Klasifikasi terkini (mengikuti kode terakhir saat diedit).</p>
-            </div>
-            <div class="w-full flex justify-center" style="height: 320px;">
-                <canvas id="kodeChart"></canvas>
-            </div>
-        </div>
-
-      </div>
-
-      <div class="mt-12 mb-4 text-center text-[10px] md:text-xs font-medium border-t border-gray-200 pt-6 no-print">
-          <span class="text-slate-500">E-Persuratan FISIP Universitas Sriwijaya © 2026. Dikembangkan oleh </span><span class="text-yellow-600 font-bold">Purwo Julianto</span><span class="text-slate-500">. All Rights Reserved.</span>
-      </div>
-
-    </div>
-  </div>
-
-<script>
-    function customAlert(message, callback) {
-        const dialog = document.getElementById('customDialog');
-        document.getElementById('dialogMessage').innerText = message;
-        document.getElementById('dialogTitle').innerText = "Informasi";
-        document.getElementById('btnDialogCancel').classList.add('hidden');
-        
-        const btnOk = document.getElementById('btnDialogOk');
-        btnOk.onclick = function() {
-            dialog.classList.add('hidden');
-            if(callback) callback();
-        };
-        dialog.classList.remove('hidden');
-    }
-
-    function customConfirm(message, callbackYes) {
-        const dialog = document.getElementById('customDialog');
-        document.getElementById('dialogMessage').innerText = message;
-        document.getElementById('dialogTitle').innerText = "Konfirmasi";
-        
-        const btnCancel = document.getElementById('btnDialogCancel');
-        btnCancel.classList.remove('hidden');
-        
-        const btnOk = document.getElementById('btnDialogOk');
-        btnOk.onclick = function() {
-            dialog.classList.add('hidden');
-            if(callbackYes) callbackYes();
-        };
-        
-        btnCancel.onclick = function() {
-            dialog.classList.add('hidden');
-        };
-        
-        dialog.classList.remove('hidden');
-    }
-
-    // REVISI: Tombol ESC langsung kembali ke menu Daftar
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape" || e.key === "Esc") {
-        const mainApp = document.getElementById('mainApp');
-        const dialog = document.getElementById('customDialog');
-        const isLoggedIn = mainApp && !mainApp.classList.contains('hidden');
-        const isDialogOpen = dialog && !dialog.classList.contains('hidden');
-        if (isLoggedIn && !isDialogOpen) {
-          showMenu('list');
-        }
-      }
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-      const dispContainer = document.getElementById('disposisiContainer');
-      if(dispContainer) {
-          let dispHTML = '';
-          for(let i=1; i<=5; i++) {
-              dispHTML += `
-                  <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
-                      <label class="block text-[9px] font-black text-gray-400 uppercase mb-2">Disposisi Tahap ${i}</label>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          <input type="text" id="disp${i}" placeholder="Tujuan/Catatan" class="text-xs border-gray-200 border p-2 rounded-lg outline-none focus:ring-1 focus:ring-green-400">
-                          <input type="datetime-local" id="waktu${i}" class="text-xs border-gray-200 border p-2 rounded-lg outline-none focus:ring-1 focus:ring-green-400 bg-white">
-                      </div>
-                  </div>
-              `;
-          }
-          dispContainer.innerHTML = dispHTML;
-      }
-    });
-
-    // REVISI: Ganti google.script.run (iframe) dengan fetch() ke Web App Apps Script sebagai API JSON.
-    // Pakai Content-Type text/plain supaya browser tidak mengirim preflight OPTIONS (yang tidak didukung Apps Script).
-    const API_URL = "https://script.google.com/macros/s/AKfycbwrtXdpNuvPRwwVEpRC_Jl7KuAoldXP1mSWGrm16J-oYFh6CrptmgEdzyLcXa_M4s-FAQ/exec";
-
-    async function callAPI(action, params) {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(Object.assign({ action: action }, params || {}))
-      });
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      return await response.json();
-    }
-
-    let currentLoggedUser = '';
-    let rawDataArsip = [];
-    let filteredDataArsip = [];
-    let myChart = null;
-    let miniChart = null;
-    let monthlyChartObj = null;
-    let kodeChartObj = null; 
-    let currentPage = 1;
-    const rowsPerPage = 10;
-
-    function showLoading(status) { document.getElementById('loading').style.display = status ? 'flex' : 'none'; }
-
-    async function doLogin() {
-      const user = document.getElementById('username').value;
-      const pass = document.getElementById('password').value;
-      if(!user || !pass) return;
-      showLoading(true);
-      try {
-        const isMatch = await callAPI('checkLogin', { user: user, pass: pass });
-        showLoading(false);
-        if (isMatch) {
-          currentLoggedUser = user;
-          document.getElementById('loginPage').classList.add('hidden');
-          document.getElementById('mainApp').classList.remove('hidden');
-          showMenu('list');
-        } else {
-          document.getElementById('loginError').classList.remove('hidden');
-        }
-      } catch (error) {
-        showLoading(false);
-        customAlert("Error Server: " + error.message);
-      }
-    }
-
-    function showMenu(menu) {
-      document.getElementById('sectionInput').classList.toggle('hidden', menu !== 'input');
-      document.getElementById('sectionList').classList.toggle('hidden', menu !== 'list');
-      document.getElementById('sectionStats').classList.toggle('hidden', menu !== 'stats');
-      if(menu === 'list') loadArsipList();
-      if(menu === 'stats') loadStats();
-      if(menu !== 'input') resetForm();
-    }
-
-    function logout() { 
-      currentLoggedUser = '';
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
-      document.getElementById('loginError').classList.add('hidden');
-      document.getElementById('mainApp').classList.add('hidden');
-      document.getElementById('loginPage').classList.remove('hidden');
-    }
-
-    async function loadArsipList() {
-      showLoading(true);
-      try {
-        const data = await callAPI('getArsipList');
-        showLoading(false);
-        rawDataArsip = data || [];
-        filteredDataArsip = [...rawDataArsip];
-        currentPage = 1;
-        renderTable();
-      } catch (error) {
-        showLoading(false);
-        customAlert("Gagal mengambil data dari Spreadsheet: " + error.message);
-      }
-    }
-
-    function filterTable() {
-      const val = document.getElementById('searchInput').value.toLowerCase();
-      filteredDataArsip = rawDataArsip.filter(item => 
-        (item.perihal?.toLowerCase().includes(val)) ||
-        (item.noSurat?.toLowerCase().includes(val)) ||
-        (item.alamatPengirim?.toLowerCase().includes(val)) ||
-        (item.noAgenda?.toLowerCase().includes(val)) ||
-        (item.kode?.toLowerCase().includes(val))
-      );
-      currentPage = 1; 
-      renderTable();
-    }
-
-    function changePage(direction) {
-      currentPage += direction;
-      renderTable();
-    }
-
-    function renderTable() {
-      const tbody = document.getElementById('arsipTableBody');
-      tbody.innerHTML = '';
-      
-      const totalPages = Math.ceil(filteredDataArsip.length / rowsPerPage) || 1;
-      if(currentPage < 1) currentPage = 1;
-      if(currentPage > totalPages) currentPage = totalPages;
-      
-      const start = (currentPage - 1) * rowsPerPage;
-      const end = start + rowsPerPage;
-      const dataToRender = filteredDataArsip.slice(start, end);
-
-      if (!dataToRender.length) {
-        tbody.innerHTML = '<tr><td colspan="10" class="p-10 text-center text-gray-400 italic font-bold">Data tidak ditemukan atau kosong.</td></tr>';
-      } else {
-        dataToRender.forEach((item) => {
-          let tgl = '-';
-          if(item.tglSurat) {
-             const d = new Date(item.tglSurat);
-             tgl = isNaN(d) ? item.tglSurat : d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'});
-          }
-
-          let tglInput = '-';
-          if(item.timestamp) {
-             const d = new Date(item.timestamp);
-             tglInput = isNaN(d) ? item.timestamp : d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'}) + '<br><span class="text-[9px] text-gray-400">' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) + '</span>';
-          }
-          
-          const isSelesai = item.keterangan === 'Selesai Diproses';
-          
-          // REVISI: Tambahan Cek Tombol Lampiran 2 jika tersedia
-          let btnBuka2 = item.link2 ? `<a href="${item.link2}" target="_blank" class="bg-green-600 text-white px-2 py-1.5 rounded-lg font-black uppercase text-[9px] hover:bg-green-700 transition shadow-sm w-full mt-1 block">Buka Lampiran 2</a>` : '';
-
-          tbody.innerHTML += `
-            <tr class="hover:bg-blue-50/50 transition">
-              <td class="p-4 border-r font-bold text-gray-500 leading-tight">${tglInput}</td>
-              <td class="p-4 border-r font-black text-blue-700">${item.noAgenda || '-'}</td>
-              <td class="p-4 border-r"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-lg font-black uppercase text-[9px]">${item.kategori}</span></td>
-              <td class="p-4 border-r font-bold text-gray-700 uppercase">${item.kode || '-'}</td>
-              <td class="p-4 border-r font-bold text-gray-500">${tgl}</td>
-              <td class="p-4 border-r font-bold text-gray-800">${item.noSurat || '-'}</td>
-              <td class="p-4 border-r text-gray-600">${item.alamatPengirim || '-'}</td>
-              <td class="p-4 border-r font-black text-gray-800">${item.perihal || '-'}</td>
-              <td class="p-4 border-r italic text-green-600 font-bold leading-tight">
-                ${item.disposisiSummary || '-'} 
-                ${isSelesai ? '<br><span class="text-[9px] text-blue-600 uppercase bg-blue-100 px-1 rounded mt-1 inline-block">Selesai</span>' : ''}
-              </td>
-              <td class="p-4 text-center no-print btn-aksi align-top">
-                <div class="flex gap-1 justify-center mb-1 flex-col md:flex-row">
-                    <a href="${item.link}" target="_blank" class="bg-blue-600 text-white px-2 py-1.5 rounded-lg font-black uppercase text-[9px] hover:bg-blue-700 transition shadow-sm w-full">Buka</a>
-                    <button onclick="editArsip(${item.rowIdx})" class="bg-yellow-500 text-white px-2 py-1.5 rounded-lg font-black uppercase text-[9px] hover:bg-yellow-600 transition shadow-sm w-full">Edit</button>
-                    <button onclick="tandaiSelesai(${item.rowIdx})" class="bg-green-500 text-white px-2 py-1.5 rounded-lg font-black uppercase text-[9px] hover:bg-green-600 transition shadow-sm w-full" ${isSelesai ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>Selesai</button>
-                </div>
-                ${btnBuka2}
-              </td>
-            </tr>
-          `;
-        });
-      }
-
-      document.getElementById('pageNumber').innerText = `Halaman ${currentPage} dari ${totalPages}`;
-      const btnPrev = document.getElementById('btnPrev');
-      const btnNext = document.getElementById('btnNext');
-      
-      btnPrev.disabled = currentPage === 1;
-      btnNext.disabled = currentPage === totalPages || totalPages === 0;
-
-      btnPrev.className = btnPrev.disabled 
-        ? 'px-4 py-2 bg-gray-200 text-gray-400 rounded-xl text-[10px] font-black uppercase cursor-not-allowed w-full md:w-auto mb-2 md:mb-0' 
-        : 'px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-blue-700 transition shadow-lg w-full md:w-auto mb-2 md:mb-0';
-        
-      btnNext.className = btnNext.disabled 
-        ? 'px-4 py-2 bg-gray-200 text-gray-400 rounded-xl text-[10px] font-black uppercase cursor-not-allowed w-full md:w-auto mt-2 md:mt-0' 
-        : 'px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-blue-700 transition shadow-lg w-full md:w-auto mt-2 md:mt-0';
-    }
-
-    function editArsip(targetRowIdx) {
-      const data = rawDataArsip.find(item => item.rowIdx === targetRowIdx);
-      if(!data) return;
-
-      document.getElementById('editRowIndex').value = targetRowIdx;
-      document.getElementById('formTitle').innerText = "Edit Persuratan";
-      document.getElementById('formIcon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>';
-      document.getElementById('editNotice').classList.remove('hidden');
-      document.getElementById('btnSubmit').innerText = "Simpan Perubahan";
-      
-      // REVISI: Munculkan Form Upload Lampiran 2 di mode Edit
-      document.getElementById('containerLampiran2').classList.remove('hidden');
-      if (data.link2) {
-          document.getElementById('existingFile2').classList.remove('hidden');
-      } else {
-          document.getElementById('existingFile2').classList.add('hidden');
-      }
-      
-      const formatDate = (isoStr) => {
-          if(!isoStr) return '';
-          const d = new Date(isoStr);
-          return isNaN(d) ? '' : d.toISOString().split('T')[0];
-      };
-      
-      const formatDateTimeLocal = (isoStr) => {
-          if(!isoStr) return '';
-          const d = new Date(isoStr);
-          if(isNaN(d)) return '';
-          d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-          return d.toISOString().slice(0,16);
-      };
-
-      let kodeVal = data.kode || 'AK';
-      const kodeSelect = document.getElementById('kodeKlasifikasi');
-      let found = false;
-      for (let option of kodeSelect.options) {
-        if (option.value === kodeVal || option.value.startsWith(kodeVal + '_')) {
-          kodeSelect.value = option.value;
-          found = true; break;
-        }
-      }
-      if (!found) kodeSelect.value = 'AK';
-
-      document.getElementById('noAgenda').value = data.noAgenda || '';
-      document.getElementById('alamatPengirim').value = data.alamatPengirim || '';
-      document.getElementById('tglSurat').value = formatDate(data.tglSurat);
-      document.getElementById('noSurat').value = data.noSurat || '';
-      document.getElementById('perihal').value = data.perihal || '';
-      document.getElementById('keterangan').value = data.keterangan || '';
-      
-      for(let i=1; i<=5; i++){
-        const dispEl = document.getElementById(`disp${i}`);
-        const waktuEl = document.getElementById(`waktu${i}`);
-        if(dispEl) dispEl.value = data[`disp${i}`] || '';
-        if(waktuEl) waktuEl.value = formatDateTimeLocal(data[`waktu${i}`]);
-      }
-
-      document.getElementById('existingFile').classList.remove('hidden');
-      showMenu('input');
-    }
-
-    function tandaiSelesai(targetRowIdx) {
-      customConfirm("Tandai surat ini sebagai 'Selesai Diproses'?", async function() {
-        showLoading(true);
-        try {
-          const res = await callAPI('markAsDone', { rowIdx: targetRowIdx });
-          showLoading(false);
-          if (res.success) {
-            customAlert("Data berhasil ditandai selesai.", function() { loadArsipList(); });
-          } else { customAlert("Terjadi kesalahan: " + res.message); }
-        } catch (err) {
-          showLoading(false);
-          customAlert("Error: " + err.message);
-        }
-      });
-    }
-
-    function resetForm() {
-      document.getElementById('editRowIndex').value = "";
-      document.getElementById('formTitle').innerText = "Input Persuratan Baru";
-      document.getElementById('formIcon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>';
-      document.getElementById('editNotice').classList.add('hidden');
-      document.getElementById('btnSubmit').innerText = "Simpan & Perbarui Database";
-      document.getElementById('existingFile').classList.add('hidden');
-      
-      // REVISI: Sembunyikan Lampiran 2 saat Input Baru & bersihkan input
-      document.getElementById('containerLampiran2').classList.add('hidden');
-      document.getElementById('existingFile2').classList.add('hidden');
-      if(document.getElementById('fileInput2')) document.getElementById('fileInput2').value = "";
-      
-      const inputs = document.querySelectorAll('#sectionInput input[type="text"], #sectionInput input[type="date"], #sectionInput textarea, #sectionInput input[type="datetime-local"]');
-      inputs.forEach(i => i.value = "");
-      if(document.getElementById('fileInput')) document.getElementById('fileInput').value = "";
-      
-      document.getElementById('kodeKlasifikasi').value = 'AK'; 
-    }
-
-    // REVISI: Logic pembacaan dua file upload secara asinkron + Payload untuk Pindah Folder
-    async function submitArsip() {
-      const fileInput = document.getElementById('fileInput');
-      const fileInput2 = document.getElementById('fileInput2');
-      const file = fileInput.files[0];
-      const file2 = fileInput2 ? fileInput2.files[0] : null;
-      const isEdit = document.getElementById('editRowIndex').value !== "";
-      
-      // --- REVISI: Ambil data lama untuk fungsi pindah folder saat edit ---
-      let oldKode = "";
-      let existingLink = "";
-      let existingLink2 = "";
-      if (isEdit) {
-          const targetRowIdx = parseInt(document.getElementById('editRowIndex').value);
-          const dataLama = rawDataArsip.find(item => item.rowIdx === targetRowIdx);
-          if (dataLama) {
-              oldKode = dataLama.kode || "";
-              existingLink = dataLama.link || "";
-              existingLink2 = dataLama.link2 || "";
-          }
-      }
-      // -------------------------------------------------------------------
-
-      if (!isEdit && !file) {
-          customAlert("Peringatan: Lampiran file utama wajib diunggah untuk data baru!");
-          return;
-      }
-
-      showLoading(true);
-      
-      const processSubmission = async (f1Data, f1Name, f1Type, f2Data, f2Name, f2Type) => {
-        const payload = {
-          rowIndex: document.getElementById('editRowIndex').value,
-          fileData: f1Data, fileName: f1Name, fileType: f1Type,
-          fileData2: f2Data, fileName2: f2Name, fileType2: f2Type, 
-          kategori: "Surat Masuk", 
-          kode: document.getElementById('kodeKlasifikasi').value,
-          
-          // REVISI: Sisipkan variabel data lama ke payload
-          oldKode: oldKode,
-          existingLink: existingLink,
-          existingLink2: existingLink2,
-
-          noAgenda: document.getElementById('noAgenda').value, 
-          alamatPengirim: document.getElementById('alamatPengirim').value,
-          tglSurat: document.getElementById('tglSurat').value,
-          noSurat: document.getElementById('noSurat').value,
-          perihal: document.getElementById('perihal').value,
-          keterangan: document.getElementById('keterangan').value,
-          username: currentLoggedUser
-        };
-        for(let i=1; i<=5; i++){
-          const dEl = document.getElementById(`disp${i}`);
-          const wEl = document.getElementById(`waktu${i}`);
-          payload[`disp${i}`] = dEl ? dEl.value : "";
-          payload[`waktu${i}`] = wEl ? wEl.value : "";
-        }
-
-        try {
-          const res = await callAPI('uploadFile', { payload: payload });
-          showLoading(false);
-          if (res.success) {
-            customAlert(isEdit ? "Perubahan berhasil disimpan! (File pindah otomatis jika kode berubah)" : "Data baru berhasil masuk ke database!", function(){
-                showMenu('list');
-            });
-          } else customAlert("Error: " + res.message);
-        } catch (err) {
-          showLoading(false);
-          customAlert("Error Server: " + err.message);
-        }
-      };
-
-      try {
-          let f1Data = null, f1Name = null, f1Type = null;
-          let f2Data = null, f2Name = null, f2Type = null;
-          
-          const readFile = (fileObj) => new Promise((resolve) => { 
-              const reader = new FileReader(); 
-              reader.onload = (e) => resolve(e.target.result); 
-              reader.readAsDataURL(fileObj); 
-          });
-
-          (async () => {
-              if (file) {
-                  const base64_1 = await readFile(file);
-                  f1Data = base64_1.split(',')[1]; f1Name = file.name; f1Type = file.type;
-              }
-              if (file2) {
-                  const base64_2 = await readFile(file2);
-                  f2Data = base64_2.split(',')[1]; f2Name = file2.name; f2Type = file2.type;
-              }
-              processSubmission(f1Data, f1Name, f1Type, f2Data, f2Name, f2Type);
-          })();
-      } catch(err) {
-          showLoading(false);
-          customAlert("Gagal membaca file lampiran!");
-      }
-    }
-
-    // REVISI: Fungsi Laporan Export Excel per Triwulan
-    function exportToExcel() {
-        if (!rawDataArsip || rawDataArsip.length === 0) {
-            customAlert("Data kosong, tidak ada yang dapat diekspor.");
-            return;
-        }
-
-        const twVal = document.getElementById('triwulanSelect').value;
-        const currentYear = new Date().getFullYear();
-        let exportData = rawDataArsip;
-        
-        if (twVal !== 'all') {
-            exportData = rawDataArsip.filter(item => {
-                if (!item.tglSurat) return false;
-                const d = new Date(item.tglSurat);
-                if (isNaN(d)) return false;
-                
-                // Opsional: Filter hanya tahun yang sama
-                if (d.getFullYear() !== currentYear) return false;
-
-                const month = d.getMonth() + 1; // 1 - 12
-                if (twVal === '1' && month >= 1 && month <= 3) return true;
-                if (twVal === '2' && month >= 4 && month <= 6) return true;
-                if (twVal === '3' && month >= 7 && month <= 9) return true;
-                if (twVal === '4' && month >= 10 && month <= 12) return true;
-                return false;
-            });
-        }
-        
-        if (exportData.length === 0) {
-            let info = twVal !== 'all' ? `Triwulan ${twVal} Tahun ${currentYear}` : 'Tahun ini';
-            customAlert(`Tidak ada data surat untuk filter ${info}.`);
-            return;
-        }
-
-        const wsData = exportData.map(i => {
-            let dStr = '';
-            if (i.tglSurat) {
-                const d = new Date(i.tglSurat);
-                dStr = isNaN(d) ? i.tglSurat : d.toLocaleDateString('id-ID');
-            }
-            let inputStr = '';
-            if (i.timestamp) {
-                const d = new Date(i.timestamp);
-                inputStr = isNaN(d) ? i.timestamp : d.toLocaleString('id-ID');
-            }
-            return {
-                'Waktu Input': inputStr,
-                'Agenda': i.noAgenda,
-                'Kategori': i.kategori,
-                'Kode': i.kode,
-                'Tgl Surat': dStr,
-                'No Surat': i.noSurat,
-                'Dari/Ke': i.alamatPengirim,
-                'Perihal': i.perihal,
-                'Disposisi Terakhir': i.disposisiSummary,
-                'Link Lampiran Utama': i.link,
-                'Link Lampiran 2 (PDF)': i.link2 || '-'
-            };
-        });
-
-        const worksheet = XLSX.utils.json_to_sheet(wsData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Surat");
-        
-        const fileName = twVal === 'all' ? `Laporan_Persuratan_Seluruhnya.xlsx` : `Laporan_Persuratan_Triwulan_${twVal}_${currentYear}.xlsx`;
-        XLSX.writeFile(workbook, fileName);
-    }
-
-    async function loadStats() {
-      try {
-        const stats = await callAPI('getChartData');
-        document.getElementById('statMasuk').innerText = stats.masuk;
-        document.getElementById('statKeluar').innerText = stats.keluar;
-        renderCharts(stats.masuk, stats.keluar, stats.monthlyMasuk, stats.monthlyKeluar, stats.kodeCount);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function renderCharts(masuk, keluar, monthlyMasuk, monthlyKeluar, kodeCount) {
-      // ======================================================================
-      // REVISI: LOGIKA PERHITUNGAN ULANG AGAR SINKRON 100% DENGAN DASHBOARD
-      // ======================================================================
-      let calculatedMasuk = 0;
-      let calculatedKeluar = 0;
-      let calculatedMonthlyMasuk = new Array(12).fill(0);
-      let calculatedMonthlyKeluar = new Array(12).fill(0);
-      // REVISI: Tally jumlah dokumen per Kode Klasifikasi. Sumbernya rawDataArsip
-      // (data sheet terkini) sehingga otomatis memakai kode yang valid / terakhir
-      // diedit tanpa perlu menyimpan riwayat perubahan kode secara terpisah.
-      let calculatedKodeCount = {};
-
-      if (typeof rawDataArsip !== 'undefined' && Array.isArray(rawDataArsip)) {
-        rawDataArsip.forEach(item => {
-          const kat = (item.kategori || "").toUpperCase();
-          if (kat === 'SURAT MASUK' || kat === 'MASUK') calculatedMasuk++;
-          else if (kat === 'SURAT KELUAR' || kat === 'KELUAR') calculatedKeluar++;
-
-          const kodeItem = (item.kode || "").toString().trim();
-          if (kodeItem) {
-            calculatedKodeCount[kodeItem] = (calculatedKodeCount[kodeItem] || 0) + 1;
-          }
-
-          // Deteksi nama bulan langsung dari teks string (Format: "01 Jul 2026 15.37")
-          let dateStr = (item.waktuInput || item.timestamp || item.tglInput || item.tglSurat || "").toString().toLowerCase();
-          let m = -1;
-
-          if (dateStr.includes('jan')) m = 0;
-          else if (dateStr.includes('feb')) m = 1;
-          else if (dateStr.includes('mar')) m = 2;
-          else if (dateStr.includes('apr')) m = 3;
-          else if (dateStr.includes('mei') || dateStr.includes('may')) m = 4;
-          else if (dateStr.includes('jun')) m = 5;
-          else if (dateStr.includes('jul')) m = 6;
-          else if (dateStr.includes('agu') || dateStr.includes('aug')) m = 7;
-          else if (dateStr.includes('sep')) m = 8;
-          else if (dateStr.includes('okt') || dateStr.includes('oct')) m = 9;
-          else if (dateStr.includes('nov')) m = 10;
-          else if (dateStr.includes('des') || dateStr.includes('dec')) m = 11;
-          else {
-              let d = new Date(dateStr);
-              if (!isNaN(d.getTime())) m = d.getMonth();
-          }
-
-          if (m !== -1) {
-            if (kat === 'SURAT MASUK' || kat === 'MASUK') calculatedMonthlyMasuk[m]++;
-            else if (kat === 'SURAT KELUAR' || kat === 'KELUAR') calculatedMonthlyKeluar[m]++;
-          }
-        });
-
-        // Timpa parameter input dengan data hasil perhitungan ulang yang valid
-        masuk = calculatedMasuk;
-        keluar = calculatedKeluar;
-        monthlyMasuk = calculatedMonthlyMasuk;
-        monthlyKeluar = calculatedMonthlyKeluar;
-        kodeCount = calculatedKodeCount;
-      }
-      // ======================================================================
-
-      const ctxMain = document.getElementById('mainChart').getContext('2d');
-      const ctxMini = document.getElementById('miniChart').getContext('2d');
-      const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
-      
-      if(myChart) myChart.destroy();
-      if(miniChart) miniChart.destroy();
-      if(monthlyChartObj) monthlyChartObj.destroy();
-      if(kodeChartObj) kodeChartObj.destroy();
-
-      const chartData = {
-        labels: ['Masuk', 'Keluar'],
-        datasets: [{ data: [masuk, keluar], backgroundColor: ['#2563eb', '#16a34a'], borderWidth: 0, hoverOffset: 15 }]
-      };
-
-      myChart = new Chart(ctxMain, {
-        type: 'doughnut',
-        data: chartData,
-        options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { font: { weight: 'bold', family: 'Inter' } } } } }
-      });
-
-      miniChart = new Chart(ctxMini, {
-        type: 'bar',
-        data: chartData,
-        options: { indexAxis: 'y', scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
-      });
-
-      monthlyChartObj = new Chart(ctxMonthly, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-            datasets: [
-                {
-                    label: 'Surat Masuk',
-                    data: monthlyMasuk,
-                    backgroundColor: '#2563eb',
-                    borderRadius: 4
-                },
-                {
-                    label: 'Surat Keluar',
-                    data: monthlyKeluar,
-                    backgroundColor: '#16a34a',
-                    borderRadius: 4
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom', labels: { font: { weight: 'bold', family: 'Inter' } } }
-            },
-            scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 1 } }
-            }
-        }
-      });
-
-      // REVISI: Grafik jumlah dokumen per Kode Klasifikasi, diurutkan dari yang terbanyak
-      const kodeColors = ['#2563eb', '#16a34a', '#dc2626', '#d97706', '#7c3aed', '#0891b2', '#db2777', '#65a30d', '#9333ea', '#0d9488', '#ea580c', '#4f46e5', '#059669', '#e11d48', '#0284c7', '#ca8a04'];
-      const kodeEntries = Object.entries(kodeCount || {}).sort((a, b) => b[1] - a[1]);
-
-      const ctxKode = document.getElementById('kodeChart').getContext('2d');
-      kodeChartObj = new Chart(ctxKode, {
-        type: 'bar',
-        data: {
-            labels: kodeEntries.map(e => e[0]),
-            datasets: [{
-                label: 'Jumlah Dokumen',
-                data: kodeEntries.map(e => e[1]),
-                backgroundColor: kodeEntries.map((_, i) => kodeColors[i % kodeColors.length]),
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 1 } }
-            }
-        }
-      });
-    }
-
-    function printData() { window.print(); }
     
-    function exportToPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('l', 'mm', 'a4');
-      doc.setFontSize(14);
-      doc.text("BUKU AGENDA PERSURATAN DIGITAL FISIP UNIVERSITAS SRIWIJAYA", 105, 15, { align: 'center' });
-      const rows = filteredDataArsip.map(i => {
-         let dStr = '';
-         if(i.tglSurat){
-             const d = new Date(i.tglSurat);
-             dStr = isNaN(d) ? i.tglSurat : d.toLocaleDateString('id-ID');
-         }
-         let inputStr = '';
-         if(i.timestamp){
-             const d = new Date(i.timestamp);
-             inputStr = isNaN(d) ? i.timestamp : d.toLocaleString('id-ID');
-         }
-         return [inputStr, i.noAgenda, i.kategori, i.kode, dStr, i.noSurat, i.alamatPengirim, i.perihal, i.disposisiSummary];
-      });
-      doc.autoTable({
-        startY: 20,
-        head: [['Waktu Input', 'Agenda', 'Kategori', 'Kode', 'Tgl Surat', 'No Surat', 'Dari/Ke', 'Perihal', 'Disposisi Terakhir']],
-        body: rows,
-        styles: { fontSize: 8, font: 'helvetica' },
-        headStyles: { fillColor: [37, 99, 235] }
-      });
-      doc.save("Laporan_Persuratan.pdf");
-    }
-  </script>
+    <iframe 
+        src="https://script.google.com/macros/s/AKfycbwrtXdpNuvPRwwVEpRC_Jl7KuAoldXP1mSWGrm16J-oYFh6CrptmgEdzyLcXa_M4s-FAQ/exec" 
+        onload="
+            var loader = document.getElementById('loader-container');
+            loader.style.opacity = '0';
+            setTimeout(function(){ loader.style.visibility = 'hidden'; loader.style.display = 'none'; }, 500);
+        " 
+        allowfullscreen>
+    </iframe>
+
 </body>
 </html>
